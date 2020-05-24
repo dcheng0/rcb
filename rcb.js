@@ -1,3 +1,5 @@
+// redmenace, if you see this, you totally have permission to copy as much as you want :)
+
 var Allele;
 
 (function (Allele) {
@@ -367,7 +369,7 @@ Vue.component('genome', {
 
                             if (bh.best === nbs){
                                 tv.breedingSet = nbs;
-                                toolbar.possibles = results;
+                                tv.possibles = results;
                             }
                         });
                     }

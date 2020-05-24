@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Rust Crossbreed Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Condensed&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="rcb.css">
+</head>
+
+<body>
+    <div id="app">
+        <h1>Rust Crossbreed Tool</h1>
+        Add clones: <input type="text" @input="checkCloneInput" v-model="cloneInput" placeholder="GHWXYG"> <button
+            @click="addClone" :disabled="cloneInput.length != 6">ADD</button>
+        <div class="glh">
+            <div v-for="(clone, index) in clones" :key="clone.text">
+                <genome v-bind:genome="clone.genome"></genome> <button @click="clones.splice(index, 1)">REMOVE</button>
+            </div>
+            <div v-show="clones.length < 3" style="padding: 10pt;">
+                <i>Add some clones here. You need a minimum of 3 clones to proceed.</i>
+            </div>
+        </div>
+        Desired output genes: <input type="text" @input="checkTargetInput" v-model="targetInput" placeholder="GGGGYY">
+        <button @click="calculate" :disabled="busy || targetInput.length != 6 || clones.length < 3">CALCULATE</button>
+        <div v-show="busy" style="margin-top: 15pt;">
+            Busy calculating, {{ busyNumber }} combinations checked... <button @click="cancel = true;">STOP</button>
+        </div>
+        <div v-if="breedingSet != null">
+            <h2>Results</h2>
+            <p>First, plant this in the middle of a planter:</p>
+            <div class="glh">
+                <genome v-bind:genome="breedingSet.genomes[0]"></genome>
+            </div>
+            <p>Once it is about mid way through "sapling" stage, plant the following clones around it in the same planter:</p>
+            <div class="glh">
+                <div v-for="genome in getModifierGenomes()" :key="genome.toString()">
+                    <genome v-bind:genome="genome"></genome>
+                </div>
+            </div>
+            <p v-show="possibles.length == 1">The genes of the middle plant will change, during the "crossbreeding" stage, to the following:</p>
+            <p v-show="possibles.length > 1">The genes of the middle plant will change, during the "crossbreeding" stage, to one of the following:</p>
+            <div class="glh">
+                <div v-for="genome in possibles" :key="genome.toString()">
+                    <genome v-bind:genome="genome"></genome>
+                </div>
+            </div>
+            <p>
+                Only take clones from the middle plant once it is mature. The other plants will probably be ruined by crossbreeding, so make sure
+                you don't crossbreed with your last copy of a clone.
+            </p>
+            <p v-show="possibles.length > 1">This is the best plan we could come up with. You are not guaranteed to get the genes you wanted -
+                one of the possible results will be picked by the game at random. If you don't get what you want the first time, you can try again
+                with the same clones, or get different clones so that we can suggest a plan that will guarantee a specific outcome.
+            </p>
+        </div>
+    </div>
+    <script type="text/javascript" src="rcb.js"></script>
+</body>
+
+</html>

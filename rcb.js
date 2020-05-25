@@ -171,7 +171,6 @@ class BreedingSet {
         return retv;
     }
 }
-
 class ArrayCombinationIterator {
     constructor(list, minListSize, maxListSize) {
         this.list = list;
@@ -232,6 +231,119 @@ class ArrayCombinationIterator {
             retv.push(this.list[element]);
         });
         return retv;
+    }
+}
+
+class StartRotatingArrayIterator {
+    constructor(it) {
+        this.it = it;
+        this.l = null;
+        this.idx = 0;
+    }
+
+    next() {
+        while (true) {
+            if (this.l == null) {
+                this.l = this.it.next();
+
+                this.idx = 0;
+
+                return this.l;
+            } else {
+                this.idx++;
+                if (this.idx == this.l.length) {
+                    this.l = null;
+                } else {
+                    var retv = [];
+                    this.l.forEach(e => {
+                        retv.push(e);
+                    });
+                    retv.splice(this.idx, 1);
+                    retv.unshift(this.l[this.idx]);
+                    return retv;
+                }
+            }
+        }
+
+    }
+}
+
+class ListRepeatFrequencyIterator {
+
+    constructor(list, maxExtraItems) {
+        this.list = list;
+        this.maxExtraItems = maxExtraItems;
+        this.dupCount = [];
+        for (var i = 0; i < this.list.length; i++) {
+            this.dupCount[i] = 0;
+        }
+        this.dupTotal = 0;
+    }
+
+    next() {
+        {
+            var i = 0;
+
+            while (true) {
+                if (i == this.list.length) {
+                    return null;
+                }
+                this.dupCount[i]++;
+                this.dupTotal++;
+                if (this.dupTotal > this.maxExtraItems) {
+                    this.dupTotal -= this.dupCount[i];
+                    this.dupCount[i] = 0;
+                    i++;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        var retv = [];
+
+        this.list.forEach(e => retv.push(e));
+
+        for (var i = 0; i < this.dupCount.length; i++) {
+            for (var j = 0; j < this.dupCount[i]; j++) {
+                retv.push(this.list[i]);
+            }
+        }
+
+        return retv;
+    }
+}
+
+
+class DuplicatingListCombinationIterator {
+
+    constructor(it, maxListSize) {
+        this.it1 = it;
+        this.maxListSize = maxListSize;
+        this.it2 = null;
+    }
+
+    next() {
+        while (true) {
+            if (this.it2 != null) {
+                var l = this.it2.next();
+
+                if (l == null) {
+                    this.it2 = null;
+                } else {
+                    return l;
+                }
+            } else {
+                var l = this.it1.next();
+
+                if (l == null) {
+                    return null;
+                } else {
+                    this.it2 = new ListRepeatFrequencyIterator(l, this.maxListSize - l.length);
+                    return l;
+                }
+            }
+        }
     }
 }
 
@@ -314,7 +426,7 @@ Vue.component('genome', {
                     genomes.push(c.genome);
                 });
 
-                var it = new ArrayCombinationIterator(genomes, 3, 9);
+                var it = new DuplicatingListCombinationIterator(new StartRotatingArrayIterator(new ArrayCombinationIterator(genomes, 3, 9)), 9);
 
                 var bh = {
                     best: new BreedingSet([genomes[0]]),
@@ -322,11 +434,10 @@ Vue.component('genome', {
                     bestMatch: 0
                 };
 
-
                 genomes.forEach(g => {
                     var nm = g.getNumberOfMatchingAllelesInAnyPosition(this.targetGenome);
 
-                    if (nm > bh.bestMatch){
+                    if (nm > bh.bestMatch) {
                         bh.bestMatch = nm;
                         bh.best = new BreedingSet([g]);
                         bh.bestPossibles = 1;
@@ -335,55 +446,44 @@ Vue.component('genome', {
 
                 var tv = this;
 
-                var func = function(){
+                var func = function () {
                     var l = null;
 
-                    if (!tv.cancel){
+                    if (!tv.cancel) {
                         l = it.next();
                     }
 
-                    if (l == null){
+                    if (l == null) {
                         tv.busy = false;
                         tv.breedingSet = bh.best;
                         tv.possibles = bh.best.getPossibleResults();
                         return;
                     }
 
-                    for (var i = 0; i < l.length; i++) {
-                        var sl = [];
-            
-                        l.forEach(x => {
-                            sl.push(x);
-                        });
-            
-                        sl.splice(i, 1);
-                        sl.unshift(l[i]);
-            
-                        var nbs = new BreedingSet(sl);
-            
-                        var results = nbs.getPossibleResults();
-            
-                        results.forEach(r => {
-                            var nm = r.getNumberOfMatchingAllelesInAnyPosition(tv.targetGenome);
-                            if (nm > bh.bestMatch) {
-                                bh.best = nbs;
-                                bh.bestMatch = nm;
-                                bh.bestPossibles = results.length;
-                            } else if (nm == bh.bestMatch) {
-                                if (results.length < bh.bestPossibles) {
-                                    bh.best = nbs;
-                                    bh.bestPossibles = results.length;
-                                } else if (results.length == bh.bestPossibles && nbs.genomes.length < bh.best.genomes.length) {
-                                    bh.best = nbs;
-                                }
-                            }
+                    var nbs = new BreedingSet(l);
 
-                            if (bh.best === nbs){
-                                tv.breedingSet = nbs;
-                                tv.possibles = results;
+                    var results = nbs.getPossibleResults();
+
+                    results.forEach(r => {
+                        var nm = r.getNumberOfMatchingAllelesInAnyPosition(tv.targetGenome);
+                        if (nm > bh.bestMatch) {
+                            bh.best = nbs;
+                            bh.bestMatch = nm;
+                            bh.bestPossibles = results.length;
+                        } else if (nm == bh.bestMatch) {
+                            if (results.length < bh.bestPossibles) {
+                                bh.best = nbs;
+                                bh.bestPossibles = results.length;
+                            } else if (results.length == bh.bestPossibles && nbs.genomes.length < bh.best.genomes.length) {
+                                bh.best = nbs;
                             }
-                        });
-                    }
+                        }
+
+                        if (bh.best === nbs) {
+                            tv.breedingSet = nbs;
+                            tv.possibles = results;
+                        }
+                    });
 
                     tv.busyNumber++;
 

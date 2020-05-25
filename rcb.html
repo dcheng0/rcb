@@ -14,7 +14,7 @@
         <h1>Rust Crossbreed Tool</h1>
         Add clones: <input type="text" @input="checkCloneInput" @keyup.enter="addClone" v-model="cloneInput" placeholder="GHWXYG">
         <button @click="addClone" :disabled="cloneInput.length != 6">ADD</button>
-        <button @click="clones = []">CLEAR</button>
+        <button @click="clones = []" :disabled="clones.length == 0">CLEAR</button>
         <div class="glh">
             <div v-for="(clone, index) in clones" :key="clone.text">
                 <genome v-bind:genome="clone.genome"></genome> <button @click="clones.splice(index, 1)">REMOVE</button>

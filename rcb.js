@@ -322,6 +322,17 @@ Vue.component('genome', {
                     bestMatch: 0
                 };
 
+
+                genomes.forEach(g => {
+                    var nm = g.getNumberOfMatchingAllelesInAnyPosition(this.targetGenome);
+
+                    if (nm > bh.bestMatch){
+                        bh.bestMatch = nm;
+                        bh.best = new BreedingSet([g]);
+                        bh.bestPossibles = 1;
+                    }
+                });
+
                 var tv = this;
 
                 var func = function(){

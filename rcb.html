@@ -12,8 +12,9 @@
 <body>
     <div id="app">
         <h1>Rust Crossbreed Tool</h1>
-        Add clones: <input type="text" @input="checkCloneInput" v-model="cloneInput" placeholder="GHWXYG"> <button
-            @click="addClone" :disabled="cloneInput.length != 6">ADD</button>
+        Add clones: <input type="text" @input="checkCloneInput" @keyup.enter="addClone" v-model="cloneInput" placeholder="GHWXYG">
+        <button @click="addClone" :disabled="cloneInput.length != 6">ADD</button>
+        <button @click="clones = []">CLEAR</button>
         <div class="glh">
             <div v-for="(clone, index) in clones" :key="clone.text">
                 <genome v-bind:genome="clone.genome"></genome> <button @click="clones.splice(index, 1)">REMOVE</button>
@@ -52,7 +53,9 @@
                     stage, to one of the following:</p>
                 <div class="glh">
                     <div v-for="genome in possibles" :key="genome.toString()">
-                        <genome v-bind:genome="genome"></genome> <span style="margin-left: 20pt;">Matches {{ genome.getNumberOfMatchingAllelesInAnyPosition(targetGenome) }} of your desired genes</span>
+                        <genome v-bind:genome="genome"></genome> <span style="margin-left: 20pt;">Matches
+                            {{ genome.getNumberOfMatchingAllelesInAnyPosition(targetGenome) }} of your desired
+                            genes</span>
                     </div>
                 </div>
                 <p>

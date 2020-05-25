@@ -12,7 +12,8 @@
 <body>
     <div id="app">
         <h1>Rust Crossbreed Tool</h1>
-        Add clones: <input type="text" @input="checkCloneInput" @keyup.enter="addClone" v-model="cloneInput" placeholder="GHWXYG">
+        Add clones: <input type="text" @input="checkCloneInput" @keyup.enter="addClone" v-model="cloneInput"
+            placeholder="GHWXYG">
         <button @click="addClone" :disabled="cloneInput.length != 6">ADD</button>
         <button @click="clones = []" :disabled="clones.length == 0">CLEAR</button>
         <div class="glh">
@@ -32,7 +33,8 @@
             <h2>Results</h2>
             <div v-show="breedingSet.genomes.length < 2">
                 <p>
-                    Sorry, we can't find a way to breed a plant which will be better than the clones you already have. Try adding more and different clones.
+                    Sorry, we can't find a way to breed a plant which will be better than the clones you already have.
+                    Try adding more and different clones.
                 </p>
             </div>
             <div v-show="breedingSet.genomes.length > 1">
@@ -72,7 +74,16 @@
                 </p>
             </div>
         </div>
-        <p><small>Feedback: <a href="https://discord.gg/yEEFU6n">Discord</a></small></p>
+        <div style="margin-top: 60pt;">
+            <hr>
+            <p>Feedback: <a href="https://discord.gg/yEEFU6n">Discord</a></p>
+            <p>Credit:</p>
+            <ul>
+                <li>Coliformes for testing and demonstrating deficiencies</li>
+                <li><a href="https://www.youtube.com/channel/UCbUhGPYHIaL6R8XCXzN9lRA" title="Tamura77 on YouTube"
+                        target="_blank">Tamura77</a> for crossbreeding technique</li>
+            </ul>
+        </div>
     </div>
     <script type="text/javascript" src="rcb.js"></script>
 </body>
